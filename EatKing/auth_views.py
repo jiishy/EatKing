@@ -30,3 +30,12 @@ def signup_submit(request):
 def logout(request):
 	auth.logout(request)
 	return redirect('login')
+def user(request):
+	return redirect('user')
+def modify(request):
+	return redirect('modify')
+def modify_submit(request):
+	legal = 1;# needs a function to judge the submited info is legal
+	if not legal:
+		return render(request,'modify')
+	return render(request,'user')
