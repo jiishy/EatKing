@@ -25,7 +25,7 @@ SECRET_KEY = 'mz2i#btmvk()oya3)zn9o9j$tm-wtxjo@nh)$p@)-duqezi3*i'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -81,7 +81,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME':'EatKing',
         'USER': 'root',
-        'PASSWORD': 'jishuyihaha',
+        'PASSWORD': 'EatKing',
         'HOST': 'localhost',
         'PORT': '3306',
     }
