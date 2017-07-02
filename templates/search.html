@@ -1,10 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends 'base.html' %}
+{% block content %}
+<div>
+    <form method="post" action="{% url 'search' %}">
+        {% csrf_token %}
+        <input type="text" id="search" name="search" style="width:40%;display:inline"
+               class="form-control" placeholder="输入店铺名、地区、菜系等" value="{{ content }}" />
+        <button type="submit" class="btn btn-primary">搜索</button>
+    </form>
+    <div>
+        {% for g in gdict %}
+        <a href="{{ g.addr }}">
+            {{ shop.name }}
+        </a>
+        {% endblock %}
+    </div>
+    <table class="table">
+        <tbody>
+            {% for shop in shops %}
+            <tr>
+                <td>
+                    <img itemprop="photo" src="{{ shop.image }}" />
+                    <a href="{{ shop.addr }}">
+                        {{ shop.name }}
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
