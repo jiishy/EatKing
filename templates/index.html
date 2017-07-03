@@ -1,8 +1,13 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
     {% load static %}
-	<link href="{% static 'bootstrap3/css/bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'bootstrap3/css/bootstrap.min.css' %}" rel="stylesheet">
 {% block content %}
-<table class="table"><tbody>
-<p>111</p>
-</tbody></table>
+<div>
+    <form method="post" action="{% url 'search' %}">
+        {% csrf_token %}
+        <input type="text" id="search" name="search" style="width:40%;display:inline"
+               class="form-control" placeholder="输入店铺名、地区、菜系等" value="{{ content }}" />
+        <button type="submit" class="btn btn-primary">搜索</button>
+    </form>
+</div>
 {% endblock %}

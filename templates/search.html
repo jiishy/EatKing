@@ -3,30 +3,193 @@
 <div>
     <form method="post" action="{% url 'search' %}">
         {% csrf_token %}
-        <input type="text" id="search" name="search" style="width:40%;display:inline"
-               class="form-control" placeholder="输入店铺名、地区、菜系等" value="{{ content }}" />
-        <button type="submit" class="btn btn-primary">搜索</button>
+        <div class="input-group" style="width:40%">
+            <input type="text" class="form-control" id="search" name="search"
+                   placeholder="输入店铺名、地区、菜系等" value="{{ content }}" />
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="submit">搜索</button>
+            </span>
+        </div>
     </form>
+    <br />
     <div>
-        {% for g in gdict %}
-        <a href="{{ g.addr }}">
-            {{ shop.name }}
-        </a>
-        {% endblock %}
+        <ul class="nav nav-pills">
+            <li class="disabled"><a>分类：</a></li>
+            {% for key, value in gdict.items %}
+            <li {% if key == g %} class="active" {% endif %}>
+                <a href="{% url 'search_submit' key r '' s content %}">{{ value }}</a>
+            </li>
+            {% endfor %}
+        </ul>
     </div>
-    <table class="table">
+    <ul class="nav nav-tabs">
+        <li class="disabled"><a>地区：</a></li>
+        <li {% if r == "" %} class="active" {% endif %}>
+            <a href="{% url 'search_submit' g key '' s content %}">
+                不限
+            </a>
+        </li>
+        <li {% if r in rdict1 %} class="active" {% endif %}>
+            <a href="#bussi-nav" data-toggle="tab">
+                热门商区
+            </a>
+        </li>
+        <li {% if r in rdict2 %} class="active" {% endif %}>
+            <a href="#region-nav" data-toggle="tab">
+                行政区
+            </a>
+        </li>
+        <li {% if r in rdict3 %} class="active" {% endif %}>
+            <a href="#metro-nav" data-toggle="tab">
+                地铁线
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade {% if r in rdict1 %}in active{% endif %}" id="bussi-nav">
+            <ul class="nav nav-pills">
+                {% for key, value in rdict1.items %}
+                <li {% if key == r %} class="active" {% endif %}>
+                    <a href="{% url 'search_submit' g key '' s content %}">{{ value }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="tab-pane fade {% if r in rdict2 %}in active{% endif %}" id="region-nav">
+            <ul class="nav nav-pills">
+                {% for key, value in rdict2.items %}
+                <li {% if key == r %} class="active" {% endif %}>
+                    <a href="{% url 'search_submit' g key '' s content %}">{{ value }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="tab-pane fade {% if r in rdict3 %}in active{% endif %}" id="metro-nav">
+            <ul class="nav nav-pills">
+                {% for key, value in rdict3.items %}
+                <li {% if key == r %} class="active" {% endif %}>
+                    <a href="{% url 'search_submit' g key '' s content %}">{{ value }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div>
+        <ul class="nav nav-pills">
+            <li class="disabled"><a>排序：</a></li>
+            {% for key, value in sdict.items %}
+            {% if forloop.first %}
+            <li {% if key == s %} class="active" {% endif %}>
+                <a href="{% url 'search_submit' g r p key content %}">
+                    {{ value }}
+                </a>
+            </li>
+            {% else %}
+            {% if key == s|slice:':2' %}
+            <li class="dropdown active">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    {{ value }}{% if s|slice:'2:3' == '1' %}<span class="glyphicon glyphicon-arrow-down"></span>
+                    {% elif s|slice:'2:3' == '2' %}<span class="glyphicon glyphicon-arrow-up"></span>
+                    {% endif %}<b class="caret"></b>
+                </a>
+            {% else %}
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ value }}<b class="caret"></b></a>
+            {% endif %}
+                <ul class="dropdown-menu">
+                    <li><a href="{{ g }}{{ r }}{{ p }}{{ key }}1{{ content}}">由高到低<span class="glyphicon glyphicon-arrow-down"></span></a></li>
+                    <li><a href="{{ g }}{{ r }}{{ p }}{{ key }}2{{ content}}">由低到高<span class="glyphicon glyphicon-arrow-up"></span></a></li>
+                </ul>
+            </li> 
+            {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+    <table class="table table-condensed">
         <tbody>
             {% for shop in shops %}
             <tr>
+                <td width="240">
+                    <img itemprop="photo" src="{{ shop.image }}"
+                         width="240" height="180" alt="{{ shop.name }}图片" />
+                </td>
                 <td>
-                    <img itemprop="photo" src="{{ shop.image }}" />
-                    <a href="{{ shop.addr }}">
-                        {{ shop.name }}
-                    </a>
+                    <h3><a href="{{ shop.addr }}">{{ shop.name }}</a></h3>
+                    <div class="progress" style="width:25%">
+                        <div class="progress-bar" role="progressbar" aria-valuenow="60"
+                             aria-valuemin="0" aria-valuemax="50"
+                             style="width:{% widthratio shop.rate 1 2 %}%">
+                            <span class="sr-only">{{ shop.rate }}</span>
+                        </div>
+                    </div>
+                    <h5>人均：{{ shop.price }} &nbsp;&nbsp;&nbsp;&nbsp;
+                    口味：{{ shop.taste_score }}&nbsp;&nbsp;&nbsp;&nbsp;
+                     环境：{{ shop.env_score }}&nbsp;&nbsp;&nbsp;&nbsp;
+                     服务：{{ shop.serv_score }}</h5>
+                    <br />
+                    <h5>评论数：{{ shop.comment_num }}</h5>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    <nav style="text-align:center">
+        <ul class="pagination">
+            {% if shops.has_previous %}
+            <li>
+                <a href="{{ g }}{{ r }}p{{ shops.previous_page_number }}{{ s }}{{ content }}">
+                    &laquo;
+                </a>
+            </li>
+            {% endif %}
+
+            {% for page in show %}
+            {% if forloop.first %}
+            {% if page > 1 %}
+            <li>
+                <a href="{{ g }}{{ r }}p1{{ s }}{{ content }}">
+                    1
+                </a>
+            </li>
+            {% if page > 2 %}
+            <li class="disabled"><span>...</span></li>
+            {% endif %}
+            {% endif %}
+            {% endif %}
+            {% if page == shops.number %}
+            <li class="active">
+                <a herf="{{ g }}{{ r }}p{{ page }}{{ s }}{{ content }}">
+                    {{ page }}
+                </a>
+            </li>
+            {% else %}
+            <li>
+                <a href="{{ g }}{{ r }}p{{ page }}{{ s }}{{ content }}">
+                    {{ page }}
+                </a>
+            </li>
+            {% endif %}
+            {% if forloop.last %}
+            {% if page < shops.paginator.num_pages|add:-1 %}
+            <li class="disabled"><span>...</span></li>
+            {% endif %}
+            {% if page < shops.paginator.num_pages %}
+            <li>
+                <a href="{{ g }}{{ r }}p{{ shops.paginator.num_pages }}{{ s }}{{ content }}">
+                    {{ shops.paginator.num_pages }}
+                </a>
+            </li>
+            {% endif %}
+            {% endif %}
+            {% endfor %}
+            {% if shops.has_next %}
+            <li>
+                <a href="{{ g }}{{ r }}p{{ shops.next_page_number }}{{ s }}{{ content }}">
+                    &raquo;
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
 </div>
 {% endblock %}

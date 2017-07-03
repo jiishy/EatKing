@@ -4,7 +4,7 @@ from . import views,auth_views
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^search$', views.search, name='search'),
-    url(r'^search/([\w\ ]*)$', views.search_submit, name='search_submit'),
+    url(r'^search/([g[0-9]*]{0,1})([rc[0-9]*]{0,1})([p[0-9]*]{0,1})([s[0-9]*]{0,1})([\W\w]*)$', views.search_submit, name='search_submit'),
     url(r'^shop/([1-9][0-9]*)$',views.enter_shop,name='enter_shop'),
     url(r'^shop/([1-9][0-9]*)/comment$',views.comment,name = 'comment'),
     url(r'^shop/([1-9][0-9]*)/like_comment$',views.like_comment,name = 'like_commment'),
