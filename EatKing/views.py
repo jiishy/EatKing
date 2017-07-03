@@ -3,54 +3,102 @@
 #Create your views here.
 
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import *
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import re, math
 
-gdict = {"g110" : "火锅", "g132" : "咖啡厅", "g508" : "烧烤", "g117" : "面包甜点", "g113" : "日本菜",
- "g112" : "小吃快餐", "g111" : "自助餐", "g116" : "西餐", "g311" : "北京菜", "g114" : "韩国料理",
- "g101" : "江浙菜", "g103" : "粤菜", "g102" : "川菜", "g104" : "湘菜", "g108" : "清真菜",
- "g109" : "素菜", "g3243" : "新疆菜", "g26481" : "西北菜", "g115" : "东南亚菜", "g1783" : "家常菜",
- "g248" : "云南菜", "g105" : "贵州菜", "g26483" : "鲁菜", "g246" : "湖北菜", "g106" : "东北菜",
- "g1845" : "俄罗斯菜", "g118" : "其他", "g251" : "海鲜", "g219" : "小龙虾", "g1817" : "粉面馆",
- "g1338" : "私房菜", "g250" : "创意菜", "g26482" : "徽菜", "g107" : "台湾菜" }
+gdict = { "" : "不限", "g110" : "火锅", "g132" : "咖啡厅", "g508" : "烧烤", "g117" : "面包甜点",
+         "g113" : "日本菜", "g112" : "小吃快餐", "g111" : "自助餐", "g116" : "西餐", "g311" : "北京菜", "g114" : "韩国料理", "g101" : "江浙菜", "g103" : "粤菜", "g102" : "川菜", "g104" : "湘菜", "g108" : "清真菜", "g109" : "素菜", "g3243" : "新疆菜", "g26481" : "西北菜", "g115" : "东南亚菜", "g1783" : "家常菜", "g248" : "云南菜", "g105" : "贵州菜", "g26483" : "鲁菜", "g246" : "湖北菜", "g106" : "东北菜", "g1845" : "俄罗斯菜", "g118" : "其他", "g251" : "海鲜", "g219" : "小龙虾", "g1817" : "粉面馆", "g1338" : "私房菜", "g250" : "创意菜", "g26482" : "徽菜", "g107" : "台湾菜" }
 
-rdict1 = {"r2580" : "三里屯", "r1471" : "望京", "r2578" : "国贸", "r1466" : "朝外大街", "r1470" : "亚运村",
-"r1469" : "亮马桥/三元桥", "r2078" : "大望路", "r1489" : "五道口", "r1488" : "中关村", "r2579" : "双井",
-"r2871" : "十里堡", "r1475" : "王府井/东单", "r1467" : "朝阳公园/团结湖", "r1481" : "西单", 
-"r1465" : "建外大街", "r2583" : "酒仙桥"}
+rdict1 = {"r2580" : "三里屯", "r1471" : "望京", "r2578" : "国贸", "r1466" : "朝外大街", "r1470" : "亚运村","r1469" : "亮马桥/三元桥", "r2078" : "大望路", "r1489" : "五道口", "r1488" : "中关村", "r2579" : "双井","r2871" : "十里堡", "r1475" : "王府井/东单", "r1467" : "朝阳公园/团结湖", "r1481" : "西单", "r1465" : "建外大街", "r2583" : "酒仙桥"}
 
-rdict2 = {"r14" : "朝阳区", "r17" : "海淀区", "r15" : "东城区", "r16" : "西城区", "r20" : "丰台区",
-"r5952" : "大兴区", "r5950" : "昌平区", "r5951" : "通州区", "r328" : "石景山区", "r9158" : "顺义区",
-"r27615" : "怀柔区", "r9157" : "房山区", "r27614" : "门头沟区", "r27616" : "平谷区", "c434" : "密云区",
-"c435" : "延庆区" }
+rdict2 = {"r14" : "朝阳区", "r17" : "海淀区", "r15" : "东城区", "r16" : "西城区", "r20" : "丰台区","r5952" : "大兴区", "r5950" : "昌平区", "r5951" : "通州区", "r328" : "石景山区", "r9158" : "顺义区","r27615" : "怀柔区", "r9157" : "房山区", "r27614" : "门头沟区", "r27616" : "平谷区", "c434" : "密云区","c435" : "延庆区" }
 
-rdict3 = {"r2179" : "1号线", "r2180" : "2号线", "r3057" : "4号线", "r2181" : "5号线", "r8095" : "6号线",
-"r66748" : "7号线", "r7643" : "8号线", "r7644" : "9号线", "r2507" : "10号线", "r2182" : "13号线",
-"r8687" : "14号线", "r6962" : "15号线", "r6961" : "昌平线", "r6964" : "大兴线", "r6965" : "亦庄线",
-"r6963" : "房山线", "r8195" : "八通线", "r8196" : "机场线" }
+rdict3 = {"r2179" : "1号线", "r2180" : "2号线", "r3057" : "4号线", "r2181" : "5号线", "r8095" : "6号线","r66748" : "7号线", "r7643" : "8号线", "r7644" : "9号线", "r2507" : "10号线", "r2182" : "13号线","r8687" : "14号线", "r6962" : "15号线", "r6961" : "昌平线", "r6964" : "大兴线", "r6965" : "亦庄线","r6963" : "房山线", "r8195" : "八通线", "r8196" : "机场线" }
 
+sdict = { "" : "默认", "s1" : "口味", "s2" : "环境", "s3" : "服务", "s4" : "人均", "s5" : "评论", "s6" : "星级" }
 
 # Create your views here.
 def index(request):
 	#posts = Post.objects.order_by('-created_at')
 	return render(request, 'index.html')#, {'posts': posts})
 
-def search(request, content=''):
+def search(request):
     if request.method == 'POST':
         content = request.POST.get('search')
-    if not content:
+    else:
         content = ''
-    return redirect('search_submit', content)
+    return redirect('search_submit', '', '', '', '', content)
 
-def search_submit(request, content):
+def search_submit(request, g, r, p, s, content):
+    if g:
+        g_pattern = g + '#'
+    else:
+        g_pattern = '.*'
+    if r:
+        r_pattern = r + '#'
+    else:
+        r_pattern = '.*'
     if content == '':
-        shops = Shop.objects.filter(id__lt = 100)
+        datas = Shop.objects.filter(area_id__regex = r_pattern).filter(type_id__regex = g_pattern)[:750]
     else:
         str = u'[\w\W]*' + content + u'[\w\W]*'
-        shops = Shop.objects.filter(name__regex = str)[:100]
-    #shops = Shop.objects.filter(image = '')[:100]
+        datas = Shop.objects.filter(area_id__regex = r_pattern).filter(type_id__regex = g_pattern).filter(name__regex = str)[:750]
+
+    if s == 's11':
+        datas = sorted(datas, reverse=True, key=lambda data: data.taste_score)
+    elif s == 's12':
+        datas = sorted(datas, key=lambda data: data.taste_score)
+    elif s == 's21':
+        datas = sorted(datas, reverse=True, key=lambda data: data.env_score)
+    elif s == 's22':
+        datas = sorted(datas, key=lambda data: data.env_score)
+    elif s == 's31':
+        datas = sorted(datas, reverse=True, key=lambda data: data.serv_score)
+    elif s == 's32':
+        datas = sorted(datas, key=lambda data: data.serv_score)
+    elif s == 's41':
+        datas = sorted(datas, reverse=True, key=lambda data: data.price)
+    elif s == 's42':
+        datas = sorted(datas, key=lambda data: data.price)
+    elif s == 's51':
+        datas = sorted(datas, reverse=True, key=lambda data: data.comment_num)
+    elif s == 's52':
+        datas = sorted(datas, key=lambda data: data.comment_num)
+    elif s == 's61':
+        datas = sorted(datas, reverse=True, key=lambda data: data.rate)
+    elif s == 's62':
+        datas = sorted(datas, key=lambda data: data.rate)
+    else:
+        s = ''
+
+    num_per_page = 15
+    paginator = Paginator(datas, num_per_page)
+    try:
+        shops = paginator.page(p[1:])
+    except PageNotAnInteger:
+        shops = paginator.page(1)
+    except EmptyPage:
+        shops = paginator.page(paginator.num_pages)
+
+    d = 4
+    start = shops.number - d
+    if start < 1:
+        start = 1
+    end = start + d * 2
+    if end > paginator.num_pages:
+        end = paginator.num_pages
+        start = end - d * 2
+        if start < 1:
+            start = 1
+    show = range(start, end + 1)
+
     dict = { 'content' : content, 'shops' : shops,
-           'gdict' : gdict, 'rdict1' : rdict1, 'rdict2' : rdict2, 'rdict3' : rdict3 }
+           'gdict' : gdict, 'rdict1' : rdict1,
+           'rdict2' : rdict2, 'rdict3' : rdict3, 'sdict' : sdict,
+          'g' : g, 'r' : r, 'p' : p, 's' : s, 'show' : show }
+
     return render(request, 'search.html', dict)
 
 def filter(request):
