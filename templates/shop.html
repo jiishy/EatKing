@@ -1,4 +1,5 @@
 ﻿{% extends 'base.html' %}
+{% load bootstrap3 %}
 {% block content%}
 <table class="table table-condensed">
     <tbody>
@@ -22,7 +23,6 @@
                     环境：{{ shop.env_score }}&nbsp;&nbsp;&nbsp;&nbsp;
                     服务：{{ shop.serv_score }}
                 </h5>
-                <br />
                 <h5>评论数：{{ shop.comment_num }}</h5>
                 <b>地址：</b> {{ shop.location }} <br />
                 <b>电话：</b>{{ shop.tel }} <br /><b></b>
@@ -35,9 +35,9 @@
     <div class="panel-heading">网友点评:</div>
     <div class="panel-body">
         {% if user.is_authenticated %}
-        <form method="post" action="{% url 'comment' shop.id %}">
+        <form method="post" action="{% url 'comment_submit' shop.id %}">
             {% csrf_token %}
-            <textarea id="comment" name="comment" cols="40" rows="10" class="form-control" placeholder="在此处输入内容" title="" required></textarea>
+            {% bootstrap_form comment_form layout='inline' %}
             <button type="submit" class="btn btn-primary">创建评论</button>
         </form>
         {% else %}
@@ -45,6 +45,7 @@
         {% endif %}
     </div>
 </div>
+{% include 'message.html' %}
 <table class="table table-condensed">
     <tbody>
         {% for comment in comments %}

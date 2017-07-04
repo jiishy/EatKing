@@ -11,7 +11,6 @@
         } else {
             alert("您的设备不支持图片预览功能，如需该功能请升级您的设备！");
         }
-
         //获取文件
         var file = fileDom.files[0];
         var imageType = /^image\//;
@@ -102,7 +101,7 @@
             <img id="image" height="200" width="200"/>
             <br/>
             <br/>
-            <input type="file" name="file" onchange="imgPreview(this)" />
+            <input type="file" name="image" onchange="imgPreview(this)" />
         </div>
         <br/>
         <button type="submit" class="btn btn-primary">注册</button>

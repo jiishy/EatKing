@@ -1,10 +1,67 @@
+﻿{% extends 'base.html' %}
+{% block content %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>用户信息</title>
+    <script type="text/javascript">
+        function imgPreview(fileDom){
+            //判断是否支持FileReader
+            if (window.FileReader) {
+                var reader = new FileReader();
+            } else {
+                alert("您的设备不支持图片预览功能，如需该功能请升级您的设备！");
+            }
+            //获取文件
+            var file = fileDom.files[0];
+            var imageType = /^image\//;
+            //是否是图片
+            if (!imageType.test(file.type)) {
+                alert("请选择图片！");
+                return;
+            }
+            //读取完成
+            reader.onload = function(e) {
+                //获取图片dom
+                var img = document.getElementById("user.image");
+                //图片路径设置为读取的图片
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+</script>
 </head>
 <body>
-
+<h3>用户信息</h3>
+<div>
+    <form method="post" action="{% url 'modify' %}">
+        {% csrf_token %}
+         <div class="form-group">
+            <label for="image">头像:</label>
+            <br/>
+             {% if not u.image %}
+             <img src="/media/head.jpg" width ="200" height="200"/>
+             {% else %}
+            <img src="{{ u.image.url }}" width ="200" height="200"/>
+             {% endif %}
+            <br/>
+        </div>
+        <div class="form-group">
+            <label for="username">用户名:{{user.username}}</label>
+        </div>
+        <div class="form-group">
+            <label for="email">电子邮箱:{{user.email}}</label>
+        </div>
+        <div class="form-group">
+            <label>浏览记录:</label>
+        </div>
+        <div class="form-group">
+            <label>收藏店铺:{{user.like_shop_num}}</label>
+        </div>
+        <button type="submit" class="btn btn-primary">修改</button>
+    </form>
+</div>
 </body>
 </html>
+{% endblock %}

@@ -2,12 +2,12 @@
 {% load bootstrap3 %}
 {% block content %}
 <div class="panel panel-default">
-    <div class="panel-heading">举报店铺</div>
+    <div class="panel-heading">举报店铺：{{ shop.name }}</div>
     <div class="panel-body">
         {% if user.is_authenticated %}
-        <form method="post" action="{% url 'new_shop_submit' %}">
+        <form method="post" action="{% url 'accuse_shop_submit' shop.id %}">
             {% csrf_token %}
-            {% bootstrap_form new_shop_form layout='inline' %}
+            {% bootstrap_form accuse_shop_form layout='inline' %}
             {% buttons submit=' 提交' %}{% endbuttons %}
         </form>
         {% else %}
