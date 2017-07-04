@@ -2,7 +2,7 @@
 {% load bootstrap3 %}
 {% block content %}
 <div class="panel panel-default">
-    <div class="panel-heading">申请添加店铺</div>
+    <div class="panel-heading">举报店铺</div>
     <div class="panel-body">
         {% if user.is_authenticated %}
         <form method="post" action="{% url 'new_shop_submit' %}">

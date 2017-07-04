@@ -12,9 +12,10 @@ class CustomUser(User): #Derived from Django User
     email = models.CharField(max_length=100)
     is_superuser = models.BooleanField
     '''
-    like_shop_num = models.CharField(max_length=128,default=None)
+    like_shop_num = models.CharField(max_length=128,default=0)
     image = models.ImageField(default=None)
     objects = UserManager()
+
 class Shop(models.Model):
     #id = models.IntegerField()#(max_length=11)
     location = models.CharField(max_length=254)
@@ -35,15 +36,15 @@ class Shop(models.Model):
 
 class Accuse_user(models.Model):
     #id = models.IntegerField()#(max_length=11)
-    accuser = models.IntegerField(default = None)#(max_length=11)
-    defendant = models.IntegerField(default = None)#(max_length=11)
-    content = models.CharField(max_length=100)
+    accuser = models.ForeignKey(CustomUser, related_name='User_Accusers', related_query_name='User_Accuser')
+    defendant = models.ForeignKey(CustomUser, related_name='User_Defendants', related_query_name='User_Defendant')
+    content = models.TextField()
 
 class Accuse_shop(models.Model):
     #id = models.IntegerField()#(max_length=11)
-    accuser = models.IntegerField(default = None)#(max_length=11)
-    defendant = models.IntegerField(default = None)#(max_length=11)
-    content = models.CharField(max_length=100)
+    accuser = models.ForeignKey(CustomUser, related_name='Shop_Accusers', related_query_name='Shop_Accuser')
+    defendant = models.ForeignKey(Shop, related_name='Shop_Defendants', related_query_name='Shop_Defendant')
+    content = models.TextField()
 
 class New_shop(models.Model):
     #id = models.IntegerField()#(max_length=11)
@@ -58,28 +59,25 @@ class New_shop(models.Model):
     # image = models.BinaryField todo
 class Recommend(models.Model):
     #id = models.IntegerField()#(max_length=11)
-    shop_id = models.IntegerField(default=None)#(max_length=11)
+    shop_id = models.ForeignKey(Shop, related_name='Shop_Recommends', related_query_name='Shop_Recommend')
     name = models.CharField(max_length=128)
     #pic = models.BinaryField todo
 
 class Like_shop(models.Model):
-    #id = models.IntegerField()#(max_length=11)
-    user_id = models.IntegerField(default=None)#(max_length=11)
-    shop_id = models.IntegerField(default=None)#(max_length=11)
+    user_id = models.ForeignKey(CustomUser, related_name='CustomUser_Like_shops', related_query_name='CustomUser_Like_shop')
+    shop_id = models.ForeignKey(Shop, related_name='Shop_Like_shops', related_query_name='Shop_Like_shop')
 
 class Record(models.Model):
-    #id = models.IntegerField()#(max_length=11)
-    user_id = models.IntegerField(default=None)#(max_length=11)
-    shop_id = models.IntegerField(default=None)#(max_length=11)
-    create_at = models.DateField(default=None)
+    user_id = models.ForeignKey(CustomUser, related_name='CustomUser_Records', related_query_name='CustomUser_Record')
+    shop_id = models.ForeignKey(Shop, related_name='Shop_Records', related_query_name='Shop_Record')
+    create_at = models.DateField(default=timezone.now)
 
 class Comment(models.Model):
-    #id = models.IntegerField()#(max_length=11)
-    user_id = models.IntegerField(default=None)#(max_length=11)
-    shop_id = models.IntegerField(default=None)#(max_length=11)
-    taste_score = models.FloatField(default=None)
-    env_score = models.FloatField(default=None)
-    serv_score = models.FloatField(default=None)
-    like_num = models.IntegerField(default=None)#(max_length=11)
-    content = models.CharField(max_length=100)
-    create_at = models.DateField(default=None)
+    user_id = models.ForeignKey(CustomUser, related_name='CustomUser_Comments', related_query_name='CustomUser_Comment')
+    shop_id = models.ForeignKey(Shop, related_name='Shop_Comments', related_query_name='Shop_Comment')
+    taste_score = models.IntegerField(default=0)
+    env_score = models.IntegerField(default=0)
+    serv_score = models.IntegerField(default=0)
+    like_num = models.IntegerField(default=0)
+    content = models.TextField()
+    create_at = models.DateField(default=timezone.now)

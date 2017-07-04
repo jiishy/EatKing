@@ -1,18 +1,112 @@
+<!DOCTYPE html>
 {% extends 'base.html' %}
 {% block content%}
+<head>
+<meta charset="UTF-8">
+<script type="text/javascript">
+    function imgPreview(fileDom){
+        //判断是否支持FileReader
+        if (window.FileReader) {
+            var reader = new FileReader();
+        } else {
+            alert("您的设备不支持图片预览功能，如需该功能请升级您的设备！");
+        }
+
+        //获取文件
+        var file = fileDom.files[0];
+        var imageType = /^image\//;
+        //是否是图片
+        if (!imageType.test(file.type)) {
+            alert("请选择图片！");
+            return;
+        }
+        //读取完成
+        reader.onload = function(e) {
+            //获取图片dom
+            var img = document.getElementById("image");
+            //图片路径设置为读取的图片
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+    function checkUserName() {
+        var div = document.getElementById("_name");
+        div.innerHTML = "";
+        var name1 = document.form1.username.value;
+        if (name1.length > 16 || name1.length < 4){
+            div.innerHTML = "<font color=\"red\">用户名长度为4-16字符！</font>";
+            document.form1.username.select();
+            return false;
+        }
+        return true;
+    }
+    function checkPassword() {
+        var div = document.getElementById("_password");
+        div.innerHTML = "";
+        var name1 = document.form1.password.value;
+        if (name1.length > 16 || name1.length < 4) {
+            div.innerHTML = "<font color=\"red\">密码长度为4-16字符！</font>";
+            document.form1.password.select();
+            return false;
+        }
+        return true;
+    }
+    function checkEmail() {
+        var div = document.getElementById("_email");
+        div.innerHTML = "";
+        var name1 = document.form1.email.value;
+        var index = name1.indexOf("@", 0);
+        var index1 = name1.indexOf(".", 0);
+        if (name1.length == 0) return true;
+        if (index1 == -1 || index == -1 || index + 2 > index1)
+        {
+            div.innerHTML = "<font color=\"red\">电子邮件格式不正确！</font>";
+            document.form1.email.select();
+            return false;
+        }
+        return true;
+    }
+    function check()
+    {
+        if (checkUserName() && checkPassword() && checkEmail()) return true;
+        else return false;
+    }
+</script>
+</head>
+<body>
 <h3>注册</h3>
 <div>
-	<form method="post" action="{% url 'signup-submit' %}">
-		{% csrf_token %}
+    <form name="form1" method="post" action="{% url 'signup-submit' %}"  enctype="multipart/form-data">
+        {% csrf_token %}
 		<div class="form-group">
-			<label for="username">用户名</label>
-			<input type="text" id="username" name="username" class="form-control" placeholder="Username" required/>
-		</div>
-		<div class="form-group">
-			<label for="password">密码</label>
-			<input type="password" id="password" name="password" class="form-control" placeholder="Password" required/>
-		</div>
-		<button type="submit" class="btn btn-primary">注册</button>
-	</form>
+            <label for="username">用户名</label>
+            <input type="text" id="username" name="username" class="form-control" placeholder="Username" onblur="check()" required />
+            <div id ="_name" style ="display:inline">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="password">密码</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Password" onblur="check()" required />
+            <div id ="_password" style ="display:inline">
+            </div>        
+        </div>
+        <div class="form-group">
+            <label for="email">电子邮箱</label>
+            <input type="text" id="email" name="email" class="form-control" placeholder="Email" onblur="check()" />
+            <div id ="_email" style ="display:inline">
+            </div>
+        </div>
+        <div>
+            <label for="image">头像</label>
+            <br/>
+            <img id="image" height="200" width="200"/>
+            <br/>
+            <br/>
+            <input type="file" name="file" onchange="imgPreview(this)" />
+        </div>
+        <br/>
+        <button type="submit" class="btn btn-primary">注册</button>
+    </form>
 </div>
+</body>
 {% endblock %}
