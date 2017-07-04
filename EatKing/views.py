@@ -5,7 +5,12 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .models import *
+from .forms import New_shopForm
+from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 import re, math
 
 gdict = { "" : "不限", "g110" : "火锅", "g132" : "咖啡厅", "g508" : "烧烤", "g117" : "面包甜点",
@@ -93,7 +98,6 @@ def search_submit(request, g, r, p, s, content):
         if start < 1:
             start = 1
     show = range(start, end + 1)
-
     dict = { 'content' : content, 'shops' : shops,
            'gdict' : gdict, 'rdict1' : rdict1,
            'rdict2' : rdict2, 'rdict3' : rdict3, 'sdict' : sdict,
@@ -102,25 +106,71 @@ def search_submit(request, g, r, p, s, content):
     return render(request, 'search.html', dict)
 
 def filter(request):
-	return render(request,'search.html')
+    return render(request,'search.html')
 
 def sort(request):
-	return render(request,'search.html')
+    return render(request,'search.html')
 
-def enter_shop(request):
-	return render(request,'shop.html')
+def enter_shop(request, shop_id, p):
+    shop = Shop.objects.filter(id=shop_id)[0]
+    datas = shop.Shop_Comments.all().order_by('-create_at')
+    num_per_page = 15
+    paginator = Paginator(datas, num_per_page)
+    try:
+        comments = paginator.page(p[1:])
+    except PageNotAnInteger:
+        comments = paginator.page(1)
+    except EmptyPage:
+        comments = paginator.page(paginator.num_pages)
 
-def comment(request):
-	return render(request,'shop.html')
+    d = 4
+    start = comments.number - d
+    if start < 1:
+        start = 1
+    end = start + d * 2
+    if end > paginator.num_pages:
+        end = paginator.num_pages
+        start = end - d * 2
+        if start < 1:
+            start = 1
+    show = range(start, end + 1)
+    return render(request,'shop.html', { 'shop' : shop, 'comments' : comments, 'show' : show, 'p' : p })
+
+@login_required
+@require_POST
+def comment(request, shop_id):
+    content = request.POST.get('comment')
+    if not content:
+        return redirect("enter_shop", shop_id, '')
+    else:
+        comment = Comment.objects.create(content = content,user_id_id = request.user.id, shop_id_id = shop_id ,taste_score = 5, env_score = 5, serv_score = 5, like_num = 0, create_at = timezone.now())
+        comment.save
+        comments = Comment.objects.filter(content=content)
+        return redirect("enter_shop", shop_id, '')
 
 def like_comment(request):
-	return render(request,'shop.html')
+    return render(request,'shop.html')
 
 def unlike_comment(request):
-	return render(request,'shop.html')
+    return render(request,'shop.html')
 
 def like_shop(request):
-	return render(request,'shop.html')
+    return render(request,'shop.html')
 
 def unlike_shop(request):
-	return render(request,'shop.html')
+    return render(request,'shop.html')
+
+def new_shop(request):
+    return render(request, 'new_shop.html',
+                  { 'new_shop_form' : New_shopForm() })
+
+def new_shop_submit(request):
+    form = New_shopForm(request.POST)
+    if form.is_valid():
+        new_shop = form.save(commit=False)
+        new_shop.save()
+        messages.info(request, ' 申请添加店铺成功')
+    else:
+        messages.warning(request, ' 申请添加店铺失败')
+
+    return redirect('new_shop')

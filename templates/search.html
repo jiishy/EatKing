@@ -114,7 +114,7 @@
                          width="240" height="180" alt="{{ shop.name }}图片" />
                 </td>
                 <td>
-                    <h3><a href="{{ shop.addr }}">{{ shop.name }}</a></h3>
+                    <h3><a href="{% url 'enter_shop' shop.id '' %}">{{ shop.name }}</a></h3>
                     <div class="progress" style="width:25%">
                         <div class="progress-bar" role="progressbar" aria-valuenow="60"
                              aria-valuemin="0" aria-valuemax="50"
@@ -126,14 +126,17 @@
                     口味：{{ shop.taste_score }}&nbsp;&nbsp;&nbsp;&nbsp;
                      环境：{{ shop.env_score }}&nbsp;&nbsp;&nbsp;&nbsp;
                      服务：{{ shop.serv_score }}</h5>
-                    <br />
                     <h5>评论数：{{ shop.comment_num }}</h5>
+                    {% if user.is_authenticated %}
+                    <a>举报店铺</a>
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
     <nav style="text-align:center">
+        {% if shops.paginator.num_pages > 1%}
         <ul class="pagination">
             {% if shops.has_previous %}
             <li>
@@ -190,6 +193,11 @@
             </li>
             {% endif %}
         </ul>
+        {% elif not shops.count %}
+        <h2>暂无相关记录。</h2>
+        {% endif %}
+        <h4><a href="{% url 'new_shop' %}">未找到店铺？点我申请添加。</a></h4>
+        <br />
     </nav>
 </div>
 {% endblock %}

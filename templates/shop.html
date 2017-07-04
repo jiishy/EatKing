@@ -1,10 +1,123 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+﻿{% extends 'base.html' %}
+{% block content%}
+<table class="table table-condensed">
+    <tbody>
+        <tr>
+            <td width="240">
+                <img itemprop="photo" src="{{ shop.image }}"
+                     width="240" height="180" alt="{{ shop.name }}图片" />
+            </td>
+            <td>
+                <h3>{{ shop.name }}</h3>
+                <div class="progress" style="width:25%">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="60"
+                         aria-valuemin="0" aria-valuemax="50"
+                         style="width:{% widthratio shop.rate 1 2 %}%">
+                        <span class="sr-only">{{ shop.rate }}</span>
+                    </div>
+                </div>
+                <h5>
+                    人均：{{ shop.price }} &nbsp;&nbsp;&nbsp;&nbsp;
+                    口味：{{ shop.taste_score }}&nbsp;&nbsp;&nbsp;&nbsp;
+                    环境：{{ shop.env_score }}&nbsp;&nbsp;&nbsp;&nbsp;
+                    服务：{{ shop.serv_score }}
+                </h5>
+                <br />
+                <h5>评论数：{{ shop.comment_num }}</h5>
+                <b>地址：</b> {{ shop.location }} <br />
+                <b>电话：</b>{{ shop.tel }} <br /><b></b>
+                <b>营业时间：</b> {{ shop.time }}
+            </td>
+        </tr>
+    </tbody>
+</table>
+<div class="panel panel-default">
+    <div class="panel-heading">网友点评:</div>
+    <div class="panel-body">
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'comment' shop.id %}">
+            {% csrf_token %}
+            <textarea id="comment" name="comment" cols="40" rows="10" class="form-control" placeholder="在此处输入内容" title="" required></textarea>
+            <button type="submit" class="btn btn-primary">创建评论</button>
+        </form>
+        {% else %}
+        <p>登录后可评论</p>
+        {% endif %}
+    </div>
+</div>
+<table class="table table-condensed">
+    <tbody>
+        {% for comment in comments %}
+        <tr>
+            <td>
+                <h5>
+                    口味：{{ comment.taste_score }}&nbsp;&nbsp;&nbsp;&nbsp;
+                    环境：{{ comment.env_score }}&nbsp;&nbsp;&nbsp;&nbsp;
+                    服务：{{ comment.serv_score }}
+                </h5>
+                <br />
+                <span>{{ comment.content }}</span>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<nav style="text-align:center">
+    <ul class="pagination">
+        {% if comments.has_previous %}
+        <li>
+            <a href="{{ shop.id }}p{{ comments.previous_page_number }}">
+                &laquo;
+            </a>
+        </li>
+        {% endif %}
 
-</body>
-</html>
+        {% for page in show %}
+        {% if forloop.first %}
+        {% if page > 1 %}
+        <li>
+            <a href="{{ shop.id }}p1">
+                1
+            </a>
+        </li>
+        {% if page > 2 %}
+        <li class="disabled"><span>...</span></li>
+        {% endif %}
+        {% endif %}
+        {% endif %}
+        {% if page == comments.number %}
+        <li class="active">
+            <a herf="{{ shop.id }}p{{ page }}">
+                {{ page }}
+            </a>
+        </li>
+        {% else %}
+        <li>
+            <a href="{{ shop.id }}p{{ page }}">
+                {{ page }}
+            </a>
+        </li>
+        {% endif %}
+        {% if forloop.last %}
+        {% if page < comments.paginator.num_pages|add:-1 %}
+        <li class="disabled"><span>...</span></li>
+        {% endif %}
+        {% if page < comments.paginator.num_pages %}
+        <li>
+            <a href="{{ shop.id }}p{{ comments.paginator.num_pages }}">
+                {{ comments.paginator.num_pages }}
+            </a>
+        </li>
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+        {% if comments.has_next %}
+        <li>
+            <a href="{{ g }}{{ r }}p{{ comments.next_page_number }}{{ s }}{{ content }}">
+                &raquo;
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endblock %}
