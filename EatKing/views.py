@@ -5,7 +5,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .models import *
-from .forms import New_shopForm
+from .forms import *
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import get_object_or_404
@@ -134,7 +134,7 @@ def enter_shop(request, shop_id, p):
         if start < 1:
             start = 1
     show = range(start, end + 1)
-    return render(request,'shop.html', { 'shop' : shop, 'comments' : comments, 'show' : show, 'p' : p })
+    return render(request,'shop.html', { 'shop' : shop, 'comments' : comments, 'show' : show, 'p' : p,'comment_form':comment_form() })
 
 @login_required
 @require_POST
@@ -147,6 +147,19 @@ def comment(request, shop_id):
         comment.save
         comments = Comment.objects.filter(content=content)
         return redirect("enter_shop", shop_id, '')
+
+def comment_submit(request, shop_id):
+    form = comment_form(request.POST)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.user_id_id = request.user.id
+        comment.shop_id_id = shop_id
+        comment.save()
+        messages.info(request, '评论成功')
+    else:
+        messages.warning(request, ' 评论失败')
+
+    return redirect('enter_shop', shop_id, '')
 
 def like_comment(request):
     return render(request,'shop.html')
@@ -174,3 +187,20 @@ def new_shop_submit(request):
         messages.warning(request, ' 申请添加店铺失败')
 
     return redirect('new_shop')
+
+def accuse_shop(request, shop_id):
+    shop = get_object_or_404(Shop, pk=shop_id)
+    return render(request, 'accuse.html', { 'shop' : shop, 'accuse_shop_form' : Accuse_shopForm() })
+
+def accuse_shop_submit(request, shop_id):
+    form = Accuse_shopForm(request.POST)
+    if form.is_valid():
+        accuse_shop = form.save(commit=False)
+        accuse_shop.accuser_id = shop_id
+        accuse_shop.defendant_id = request.user.id
+        accuse_shop.save()
+        messages.info(request, ' 举报店铺成功')
+    else:
+        messages.warning(request, ' 举报店铺失败')
+    
+    return redirect('accuse_shop', shop_id)

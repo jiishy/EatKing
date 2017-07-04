@@ -128,7 +128,7 @@
                      服务：{{ shop.serv_score }}</h5>
                     <h5>评论数：{{ shop.comment_num }}</h5>
                     {% if user.is_authenticated %}
-                    <a>举报店铺</a>
+                    <a href="{% url 'accuse_shop' shop.id %}">举报店铺</a>
                     {% endif %}
                 </td>
             </tr>

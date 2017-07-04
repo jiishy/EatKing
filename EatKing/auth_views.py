@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from EatKing.models import CustomUser
+from django.shortcuts import get_object_or_404
 
 def login(request):
 	return render(request, 'login.html')
@@ -22,11 +23,11 @@ def signup(request):
 def signup_submit(request):
     username = request.POST.get('username')
     password = request.POST.get('password')
-    id = request.POST.get('id')
+    image = request.FILES.get('image')
     email = request.POST.get('email')
     is_superuser = 0
     try:
-        user = CustomUser.objects.create_user(username=username, password=password, email=email, like_shop_num=0)
+        user = CustomUser.objects.create_user(username=username, password=password, email=email, like_shop_num=0,image=image)
         if user:
             user.save
             return redirect('login')
@@ -34,20 +35,35 @@ def signup_submit(request):
         return redirect('signup')
 
 def modify(request):
-    auth.modify(request)
-    return redirect('modify')
+    u = get_object_or_404(CustomUser, pk=request.user.id)
+    return render(request, 'modify.html', { 'u' : u })
+
+def modify_submit(request):
+    username = request.POST.get('username')
+    password = request.POST.get('password')
+    email = request.POST.get('email')
+    image = request.FILES.get('image')
+    try:
+        user = get_object_or_404(CustomUser, pk=request.user.id)
+        if user:
+            user.username = username
+            user.set_password(password)
+            user.email = email
+            user.image = image
+            user.save()
+            user = auth.authenticate(request, username=username, password=password)
+            if not user:
+                return redirect('login')
+            auth.login(request, user)
+            return redirect('user')
+    except:
+        return redirect('modify')
 
 def user(request):
-    auth.user(request)
-    return redirect('user')
+    u = get_object_or_404(CustomUser, pk=request.user.id)
+    return render(request, 'user.html', { 'u' : u })
 
 @login_required
 def logout(request):
 	auth.logout(request)
 	return redirect('login')
-
-def modify_submit(request):
-	legal = 1;# needs a function to judge the submited info is legal
-	if not legal:
-		return render(request,'modify')
-	return render(request,'user')

@@ -1,0 +1,82 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EatKingSite", "EatKingSite", "{439FC9EE-42C0-4BEC-AB1F-19F21A446676}"
+	ProjectSection(SolutionItems) = preProject
+		EatKingSite\__init__.py = EatKingSite\__init__.py
+		EatKingSite\settings.py = EatKingSite\settings.py
+		EatKingSite\urls.py = EatKingSite\urls.py
+		EatKingSite\wsgi.py = EatKingSite\wsgi.py
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EatKing", "EatKing", "{17CA0662-EF13-44F2-8E9C-159A77A3934C}"
+	ProjectSection(SolutionItems) = preProject
+		EatKing\__init__.py = EatKing\__init__.py
+		EatKing\admin.py = EatKing\admin.py
+		EatKing\apps.py = EatKing\apps.py
+		EatKing\auth_views.py = EatKing\auth_views.py
+		EatKing\forms.py = EatKing\forms.py
+		EatKing\models.py = EatKing\models.py
+		EatKing\signals.py = EatKing\signals.py
+		EatKing\tests.py = EatKing\tests.py
+		EatKing\urls.py = EatKing\urls.py
+		EatKing\views.py = EatKing\views.py
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{DB027703-437E-43EC-8D8D-9C89501109B3}"
+	ProjectSection(SolutionItems) = preProject
+		templates\accuse.html = templates\accuse.html
+		templates\base.html = templates\base.html
+		templates\index.html = templates\index.html
+		templates\login.html = templates\login.html
+		templates\message.html = templates\message.html
+		templates\modify.html = templates\modify.html
+		templates\new_shop.html = templates\new_shop.html
+		templates\search.html = templates\search.html
+		templates\shop.html = templates\shop.html
+		templates\signup.html = templates\signup.html
+		templates\user.html = templates\user.html
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EatKing", "EatKing", "{97BD948B-BCDF-497E-A00F-652A15CA9A6E}"
+	ProjectSection(SolutionItems) = preProject
+		manage.py = manage.py
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bootstrap3", "bootstrap3", "{60E6FE11-71B2-44B7-A4D5-6349A040B67A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{1AF1AFC8-155A-4D65-BA2D-F11C42C86D7A}"
+	ProjectSection(SolutionItems) = preProject
+		EatKing\static\bootstrap3\css\bootstrap-theme.css = EatKing\static\bootstrap3\css\bootstrap-theme.css
+		EatKing\static\bootstrap3\css\bootstrap-theme.css.map = EatKing\static\bootstrap3\css\bootstrap-theme.css.map
+		EatKing\static\bootstrap3\css\bootstrap-theme.min.css = EatKing\static\bootstrap3\css\bootstrap-theme.min.css
+		EatKing\static\bootstrap3\css\bootstrap-theme.min.css.map = EatKing\static\bootstrap3\css\bootstrap-theme.min.css.map
+		EatKing\static\bootstrap3\css\bootstrap.css = EatKing\static\bootstrap3\css\bootstrap.css
+		EatKing\static\bootstrap3\css\bootstrap.css.map = EatKing\static\bootstrap3\css\bootstrap.css.map
+		EatKing\static\bootstrap3\css\bootstrap.min.css = EatKing\static\bootstrap3\css\bootstrap.min.css
+		EatKing\static\bootstrap3\css\bootstrap.min.css.map = EatKing\static\bootstrap3\css\bootstrap.min.css.map
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "js", "js", "{C743FC67-7DB0-40E4-9976-C59264FDD9A3}"
+	ProjectSection(SolutionItems) = preProject
+		EatKing\static\bootstrap3\js\bootstrap.js = EatKing\static\bootstrap3\js\bootstrap.js
+		EatKing\static\bootstrap3\js\bootstrap.min.js = EatKing\static\bootstrap3\js\bootstrap.min.js
+		EatKing\static\bootstrap3\js\jquery-3.2.1.min.js = EatKing\static\bootstrap3\js\jquery-3.2.1.min.js
+		EatKing\static\bootstrap3\js\npm.js = EatKing\static\bootstrap3\js\npm.js
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{439FC9EE-42C0-4BEC-AB1F-19F21A446676} = {97BD948B-BCDF-497E-A00F-652A15CA9A6E}
+		{17CA0662-EF13-44F2-8E9C-159A77A3934C} = {97BD948B-BCDF-497E-A00F-652A15CA9A6E}
+		{DB027703-437E-43EC-8D8D-9C89501109B3} = {97BD948B-BCDF-497E-A00F-652A15CA9A6E}
+		{60E6FE11-71B2-44B7-A4D5-6349A040B67A} = {97BD948B-BCDF-497E-A00F-652A15CA9A6E}
+		{1AF1AFC8-155A-4D65-BA2D-F11C42C86D7A} = {60E6FE11-71B2-44B7-A4D5-6349A040B67A}
+		{C743FC67-7DB0-40E4-9976-C59264FDD9A3} = {60E6FE11-71B2-44B7-A4D5-6349A040B67A}
+	EndGlobalSection
+EndGlobal
